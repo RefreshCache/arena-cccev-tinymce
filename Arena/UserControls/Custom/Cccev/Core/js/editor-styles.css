@@ -1,0 +1,22 @@
+﻿/**********************************************************************
+* Description:  Custom stylesheet for text editor.
+* Created By:   Jason Offutt @ Central Christian Church of the East Valley
+* Date Created: 6/28/2011
+*
+* $Workfile: editor-styles.css $
+* $Revision: 1 $
+* $Header: /trunk/Arena/UserControls/Custom/Cccev/Core/js/editor-styles.css   1   2011-06-28 10:37:16-07:00   JasonO $
+*
+* $Log: /trunk/Arena/UserControls/Custom/Cccev/Core/js/editor-styles.css $
+*  
+*  Revision: 1   Date: 2011-06-28 17:37:16Z   User: JasonO 
+*  Adding support for optional usage of TinyMCE style selector. 
+**********************************************************************/
+
+/**
+ * Define custom styles as classes below
+ */
+
+.red {
+    color: #ff0000 !important;
+}

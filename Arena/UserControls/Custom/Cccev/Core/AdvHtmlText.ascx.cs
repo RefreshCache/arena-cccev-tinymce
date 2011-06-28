@@ -4,10 +4,13 @@
 * Date Created: 2/18/2010
 *
 * $Workfile: AdvHtmlText.ascx.cs $
-* $Revision: 18 $
-* $Header: /trunk/Arena/UserControls/Custom/Cccev/Core/AdvHtmlText.ascx.cs   18   2011-06-23 15:14:46-07:00   JasonO $
+* $Revision: 19 $
+* $Header: /trunk/Arena/UserControls/Custom/Cccev/Core/AdvHtmlText.ascx.cs   19   2011-06-28 10:37:18-07:00   JasonO $
 *
 * $Log: /trunk/Arena/UserControls/Custom/Cccev/Core/AdvHtmlText.ascx.cs $
+*  
+*  Revision: 19   Date: 2011-06-28 17:37:18Z   User: JasonO 
+*  Adding support for optional usage of TinyMCE style selector. 
 *  
 *  Revision: 18   Date: 2011-06-23 22:14:46Z   User: JasonO 
 *  
@@ -59,14 +62,22 @@ namespace ArenaWeb.UserControls.Custom.Cccev.Core
         [BooleanSetting("Use Moxie Code File Manager", "Will inject the File Manager by MoxieCode into the TinyMCE Init script (defaults to true).", false, true)]
         public string UseMoxieFileManagerSetting { get { return Setting("UseMoxieFileManager", "true", false); } }
 
+        [BooleanSetting("Use TinyMCE Style Selector", "If checked, the stylesheet defined under 'Style Selector CSS Path' will be loaded into the editor and on the page.", false, false)]
+        public string UseStyleSelectorSetting { get { return Setting("UseStyleSelector", "false", false); } }
+
+        [TextSetting("Style Selector CSS Path", "If set, will set a custom CSS document and enable the TinyMCE style selector.", false)]
+        public string StyleSelectCssSetting { get { return Setting("StyleSelectCss", "usercontrols/custom/cccev/core/js/editor-styles.css", false); } }
+
         protected bool viewEnabled;
         protected bool editEnabled;
+        private bool useStyleSelector;
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            useStyleSelector = bool.Parse(UseStyleSelectorSetting);
             viewEnabled = CurrentModule.Permissions.Allowed(OperationType.View, CurrentUser);
             editEnabled = CurrentModule.Permissions.Allowed(OperationType.Edit, CurrentUser);
-
+            
             if (viewEnabled)
             {
                 RegisterClientScripts();
@@ -84,6 +95,11 @@ namespace ArenaWeb.UserControls.Custom.Cccev.Core
 
             // Add module-specific code through script manager to take advantage of client page lifecycle
             smpScripts.Scripts.Add(new ScriptReference("~/UserControls/Custom/Cccev/Core/js/editor.js"));
+
+            if (useStyleSelector)
+            {
+                BasePage.AddCssLink(Page, StyleSelectCssSetting);
+            }
         }
 
         private void BuildInitBlock()
@@ -102,12 +118,18 @@ namespace ArenaWeb.UserControls.Custom.Cccev.Core
             tinyMce.AppendLine("\tsave_callback: \"tinymce_save\",");
             tinyMce.AppendLine("\theight: \"400\",");
             tinyMce.AppendLine("\twidth: \"700\",");
+
+            if (useStyleSelector)
+            {
+                tinyMce.AppendLine(string.Format("\tcontent_css: \"{0}\",", StyleSelectCssSetting));
+            }
+
             tinyMce.AppendLine(string.Format("\tplugins: \"safari,inlinepopups,spellchecker,paste,media,fullscreen,tabfocus,table{0}\",", 
                 bool.Parse(UseMoxieFileManagerSetting) ? ",filemanager" : string.Empty));
             tinyMce.AppendLine("\tskin: \"wp_theme\",");
             tinyMce.AppendLine("\tdialog_type: \"modal\",");
             tinyMce.AppendLine("\n\ttheme_advanced_buttons1: \"bold,italic,underline,strikethrough,|,formatselect,|,bullist,numlist,blockquote,|,outdent,indent,|justifyleft,justifycenter,justifyright,justifyfull,|,pastetext,pasteword,removeformat,|,image,link,unlink,|,media,charmap\",");
-            tinyMce.AppendLine("\ttheme_advanced_buttons2: \"tablecontrols,|,undo,redo,|,code,fullscreen,help\",");
+            tinyMce.AppendLine(string.Format("\ttheme_advanced_buttons2: \"{0}tablecontrols,|,undo,redo,|,code,fullscreen,help\",", useStyleSelector ? "styleselect,|," : string.Empty));
             tinyMce.AppendLine("\ttheme_advanced_buttons3: \"\",");
             tinyMce.AppendLine("\ttheme_advanced_buttons4: \"\",");
             tinyMce.AppendLine("\n\ttheme_advanced_toolbar_location: \"top\",");
