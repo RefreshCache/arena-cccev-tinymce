@@ -4,10 +4,13 @@
 * Date Created: 2/18/2010
 *
 * $Workfile: AdvHtmlText.ascx.cs $
-* $Revision: 19 $
-* $Header: /trunk/Arena/UserControls/Custom/Cccev/Core/AdvHtmlText.ascx.cs   19   2011-06-28 10:37:18-07:00   JasonO $
+* $Revision: 20 $
+* $Header: /trunk/Arena/UserControls/Custom/Cccev/Core/AdvHtmlText.ascx.cs   20   2011-06-28 16:54:24-07:00   JasonO $
 *
 * $Log: /trunk/Arena/UserControls/Custom/Cccev/Core/AdvHtmlText.ascx.cs $
+*  
+*  Revision: 20   Date: 2011-06-28 23:54:24Z   User: JasonO 
+*  Updating TinyMCE version and adding optional font family/size selectors. 
 *  
 *  Revision: 19   Date: 2011-06-28 17:37:18Z   User: JasonO 
 *  Adding support for optional usage of TinyMCE style selector. 
@@ -63,7 +66,7 @@ namespace ArenaWeb.UserControls.Custom.Cccev.Core
         public string UseMoxieFileManagerSetting { get { return Setting("UseMoxieFileManager", "true", false); } }
 
         [BooleanSetting("Enable rich text editing", "If checked, the stylesheet defined under 'Style Selector CSS Path' will be loaded into the editor and on the page, along with font size/family selectors.", false, false)]
-        public string EnableRichTextEditing { get { return Setting("UseStyleSelector", "false", false); } }
+        public string EnableRichTextEditingSetting { get { return Setting("EnableRichTextEditing", "false", false); } }
 
         [TextSetting("Style Selector CSS Path", "If set, will set a custom CSS document and enable the TinyMCE style selector.", false)]
         public string StyleSelectCssSetting { get { return Setting("StyleSelectCss", "usercontrols/custom/cccev/core/js/editor-styles.css", false); } }
@@ -74,7 +77,7 @@ namespace ArenaWeb.UserControls.Custom.Cccev.Core
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            richTextEnabled = bool.Parse(EnableRichTextEditing);
+            richTextEnabled = bool.Parse(EnableRichTextEditingSetting);
             viewEnabled = CurrentModule.Permissions.Allowed(OperationType.View, CurrentUser);
             editEnabled = CurrentModule.Permissions.Allowed(OperationType.Edit, CurrentUser);
             
