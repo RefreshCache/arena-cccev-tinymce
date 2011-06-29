@@ -62,19 +62,19 @@ namespace ArenaWeb.UserControls.Custom.Cccev.Core
         [BooleanSetting("Use Moxie Code File Manager", "Will inject the File Manager by MoxieCode into the TinyMCE Init script (defaults to true).", false, true)]
         public string UseMoxieFileManagerSetting { get { return Setting("UseMoxieFileManager", "true", false); } }
 
-        [BooleanSetting("Use TinyMCE Style Selector", "If checked, the stylesheet defined under 'Style Selector CSS Path' will be loaded into the editor and on the page.", false, false)]
-        public string UseStyleSelectorSetting { get { return Setting("UseStyleSelector", "false", false); } }
+        [BooleanSetting("Enable rich text editing", "If checked, the stylesheet defined under 'Style Selector CSS Path' will be loaded into the editor and on the page, along with font size/family selectors.", false, false)]
+        public string EnableRichTextEditing { get { return Setting("UseStyleSelector", "false", false); } }
 
         [TextSetting("Style Selector CSS Path", "If set, will set a custom CSS document and enable the TinyMCE style selector.", false)]
         public string StyleSelectCssSetting { get { return Setting("StyleSelectCss", "usercontrols/custom/cccev/core/js/editor-styles.css", false); } }
 
         protected bool viewEnabled;
         protected bool editEnabled;
-        private bool useStyleSelector;
+        private bool richTextEnabled;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            useStyleSelector = bool.Parse(UseStyleSelectorSetting);
+            richTextEnabled = bool.Parse(EnableRichTextEditing);
             viewEnabled = CurrentModule.Permissions.Allowed(OperationType.View, CurrentUser);
             editEnabled = CurrentModule.Permissions.Allowed(OperationType.Edit, CurrentUser);
             
@@ -96,7 +96,7 @@ namespace ArenaWeb.UserControls.Custom.Cccev.Core
             // Add module-specific code through script manager to take advantage of client page lifecycle
             smpScripts.Scripts.Add(new ScriptReference("~/UserControls/Custom/Cccev/Core/js/editor.js"));
 
-            if (useStyleSelector)
+            if (richTextEnabled)
             {
                 BasePage.AddCssLink(Page, StyleSelectCssSetting);
             }
@@ -119,7 +119,7 @@ namespace ArenaWeb.UserControls.Custom.Cccev.Core
             tinyMce.AppendLine("\theight: \"400\",");
             tinyMce.AppendLine("\twidth: \"700\",");
 
-            if (useStyleSelector)
+            if (richTextEnabled)
             {
                 tinyMce.AppendLine(string.Format("\tcontent_css: \"{0}\",", StyleSelectCssSetting));
             }
@@ -129,8 +129,8 @@ namespace ArenaWeb.UserControls.Custom.Cccev.Core
             tinyMce.AppendLine("\tskin: \"wp_theme\",");
             tinyMce.AppendLine("\tdialog_type: \"modal\",");
             tinyMce.AppendLine("\n\ttheme_advanced_buttons1: \"bold,italic,underline,strikethrough,|,formatselect,|,bullist,numlist,blockquote,|,outdent,indent,|justifyleft,justifycenter,justifyright,justifyfull,|,pastetext,pasteword,removeformat,|,image,link,unlink,|,media,charmap\",");
-            tinyMce.AppendLine(string.Format("\ttheme_advanced_buttons2: \"{0}tablecontrols,|,undo,redo,|,code,fullscreen,help\",", useStyleSelector ? "styleselect,|," : string.Empty));
-            tinyMce.AppendLine("\ttheme_advanced_buttons3: \"\",");
+            tinyMce.AppendLine("\ttheme_advanced_buttons2: \"tablecontrols,|,undo,redo,|,code,fullscreen,help\",");
+            tinyMce.AppendLine(string.Format("\ttheme_advanced_buttons3: \"{0}\",", richTextEnabled ? "styleselect,fontselect,fontsizeselect" : string.Empty));
             tinyMce.AppendLine("\ttheme_advanced_buttons4: \"\",");
             tinyMce.AppendLine("\n\ttheme_advanced_toolbar_location: \"top\",");
             tinyMce.AppendLine("\ttheme_advanced_toolbar_align: \"left\",");
